@@ -1,6 +1,10 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ProjectsModule } from './projects/projects.module';
+import { UsersModule } from './users/users.module';
+import { SkillsModule } from './skills/skills.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +22,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
+    CacheModule.register({
+      ttl: 5,
+      max: 100,
+    }),
+    ProjectsModule,
+    UsersModule,
+    SkillsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
