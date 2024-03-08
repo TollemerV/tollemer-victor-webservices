@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Skill } from './skills.schema';
+import { CreateSkillDto } from './dto/create-skill.dto';
 
 @Injectable()
 export class SkillsService {
   constructor(@InjectModel(Skill.name) private skillModel: Model<Skill>) {}
 
-  async create(skill: Skill): Promise<Skill> {
-    const newSkill = new this.skillModel(skill);
+  async create(createSkillDto: CreateSkillDto): Promise<Skill> {
+    const newSkill = new this.skillModel(createSkillDto);
     return newSkill.save();
   }
 
@@ -20,8 +21,13 @@ export class SkillsService {
     return this.skillModel.findById(id).exec();
   }
 
-  async update(id: string, skill: Skill): Promise<Skill> {
-    return this.skillModel.findByIdAndUpdate(id, skill, { new: true }).exec();
+  async update(id: string, updateSkillDto: CreateSkillDto): Promise<Skill> {
+    const skill = await this.skillModel.findById(id);
+    if (!skill) {
+      throw new Error('Skill not found');
+    }
+    skill.set(updateSkillDto);
+    return skill.save();
   }
 
   async delete(id: string): Promise<any> {

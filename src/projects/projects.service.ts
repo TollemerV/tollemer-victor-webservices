@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Project } from './projects.schema';
+import { CreateProjectDto } from './dto/create-project.dto';
 
 @Injectable()
 export class ProjectsService {
   constructor(@InjectModel('Project') private projectModel: Model<Project>) {}
 
-  async create(project: Project): Promise<Project> {
-    const newProject = new this.projectModel(project);
+  async create(createProjectDto: CreateProjectDto): Promise<Project> {
+    const newProject = new this.projectModel({
+      ...createProjectDto,
+      team: createProjectDto.team.map((id) => new mongoose.Types.ObjectId(id)),
+    });
     return newProject.save();
   }
 
@@ -20,10 +24,19 @@ export class ProjectsService {
     return this.projectModel.findById(id).exec();
   }
 
-  async update(id: string, project: Project): Promise<Project> {
-    return this.projectModel
-      .findByIdAndUpdate(id, project, { new: true })
-      .exec();
+  async update(
+    id: string,
+    updateProjectDto: CreateProjectDto,
+  ): Promise<Project> {
+    const project = await this.projectModel.findById(id);
+    if (!project) {
+      throw new Error('Project not found');
+    }
+    project.set({
+      ...updateProjectDto,
+      team: updateProjectDto.team.map((id) => new mongoose.Types.ObjectId(id)),
+    });
+    return project.save();
   }
 
   async delete(id: string): Promise<any> {

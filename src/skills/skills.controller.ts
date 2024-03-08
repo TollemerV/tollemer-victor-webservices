@@ -2,14 +2,15 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { SkillsService } from './skills.service';
 import { Skill } from './skills.schema';
+import { CreateSkillDto } from './dto/create-skill.dto';
 
 @Controller('skills')
 export class SkillsController {
   constructor(private readonly skillsService: SkillsService) {}
 
   @Post()
-  async create(@Body() skillData: Skill): Promise<Skill> {
-    return this.skillsService.create(skillData);
+  async create(@Body() createSkillDto: CreateSkillDto): Promise<Skill> {
+    return this.skillsService.create(createSkillDto);
   }
 
   @Get()
@@ -25,9 +26,9 @@ export class SkillsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() skillData: Skill,
+    @Body() updateSkillDto: CreateSkillDto,
   ): Promise<Skill> {
-    return this.skillsService.update(id, skillData);
+    return this.skillsService.update(id, updateSkillDto);
   }
 
   @Delete(':id')
