@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProjectsModule } from './projects/projects.module';
@@ -21,6 +21,10 @@ import { AuthModule } from './auth/auth.module';
         )}/${configService.get('MONGO_DATABASE')}?retryWrites=true&w=majority`,
       }),
       inject: [ConfigService],
+    }),
+    CacheModule.register({
+      ttl: 5,
+      max: 100,
     }),
     ProjectsModule,
     UsersModule,
